@@ -22,5 +22,6 @@ public class Movimiento {
     private Long productoId;
     private String observacion;
     private String usuario; // Nombre del usuario que realizó el movimiento
+    private String usuarioEmail; // Email del usuario que realizó el movimiento
 }
 

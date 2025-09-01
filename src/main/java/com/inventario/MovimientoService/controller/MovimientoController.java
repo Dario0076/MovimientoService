@@ -7,11 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/movimientos")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class MovimientoController {
     @Autowired
     private MovimientoService movimientoService;
@@ -42,5 +45,14 @@ public class MovimientoController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/health")
+    public Map<String, Object> health() {
+        Map<String, Object> status = new HashMap<>();
+        status.put("status", "UP");
+        status.put("service", "MovimientoService");
+        status.put("timestamp", System.currentTimeMillis());
+        return status;
     }
 }

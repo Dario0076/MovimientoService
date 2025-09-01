@@ -52,6 +52,11 @@ public class MovimientoService {
         return mov;
     }
 
+    // Método simple para guardar movimiento sin validaciones complejas
+    public Movimiento saveMovimiento(Movimiento movimiento) {
+        return movimientoRepository.save(movimiento);
+    }
+
     public void deleteMovimiento(Long id) {
         // No se elimina físicamente ningún movimiento (auditoría)
     }
