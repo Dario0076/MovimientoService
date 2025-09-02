@@ -16,12 +16,25 @@ public class Movimiento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "tipo", nullable = false, length = 20)
     private String tipo;
+    
+    @Column(name = "cantidad", nullable = false)
     private Integer cantidad;
+    
+    @Column(name = "fecha", nullable = false)
     private LocalDateTime fecha;
+    
+    @Column(name = "producto_id", nullable = false)
     private Long productoId;
-    private String descripcion; // Cambiar observacion por descripcion para consistencia con frontend
-    private String usuario; // Nombre del usuario que realizó el movimiento
-    private String usuarioEmail; // Email del usuario que realizó el movimiento
+    
+    @Column(name = "descripcion", length = 500)
+    private String descripcion;
+    
+    @Column(name = "usuario", length = 100)
+    private String usuario;
+    
+    @Column(name = "usuario_email", length = 100)
+    private String usuarioEmail;
 }
 

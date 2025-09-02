@@ -8,22 +8,28 @@ import com.inventario.MovimientoService.dto.StockDTO;
 import com.inventario.MovimientoService.dto.UsuarioDTO;
 import com.inventario.MovimientoService.entity.Movimiento;
 import com.inventario.MovimientoService.repository.MovimientoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class MovimientoService {
-    @Autowired
-    private MovimientoRepository movimientoRepository;
-    @Autowired
-    private StockClient stockClient;
-    @Autowired
-    private ProductoClient productoClient;
-    @Autowired
-    private UsuarioClient usuarioClient;
+    private final MovimientoRepository movimientoRepository;
+    private final StockClient stockClient;
+    private final ProductoClient productoClient;
+    private final UsuarioClient usuarioClient;
+
+    public MovimientoService(MovimientoRepository movimientoRepository, 
+                           StockClient stockClient,
+                           ProductoClient productoClient, 
+                           UsuarioClient usuarioClient) {
+        this.movimientoRepository = movimientoRepository;
+        this.stockClient = stockClient;
+        this.productoClient = productoClient;
+        this.usuarioClient = usuarioClient;
+    }
 
     public List<Movimiento> getAllMovimientos() {
         return movimientoRepository.findAll();
@@ -36,23 +42,24 @@ public class MovimientoService {
     public Movimiento saveMovimiento(Movimiento movimiento, StockDTO stockDTO, Long usuarioId) {
         // Validar que el producto existe y está activo
         ResponseEntity<ProductoDTO> productoResponse = productoClient.getProductoById(movimiento.getProductoId());
-        if (!productoResponse.getStatusCode().is2xxSuccessful() || productoResponse.getBody() == null || !Boolean.TRUE.equals(productoResponse.getBody().getActivo())) {
+        ProductoDTO producto = productoResponse.getBody();
+        if (!productoResponse.getStatusCode().is2xxSuccessful() || producto == null || !Boolean.TRUE.equals(producto.getActivo())) {
             throw new IllegalArgumentException("El producto no existe o está inactivo");
         }
         
         // Validar que el usuario existe y está activo
         ResponseEntity<UsuarioDTO> usuarioResponse = usuarioClient.getUsuarioById(usuarioId);
-        if (!usuarioResponse.getStatusCode().is2xxSuccessful() || usuarioResponse.getBody() == null || !Boolean.TRUE.equals(usuarioResponse.getBody().getActivo())) {
+        UsuarioDTO usuario = usuarioResponse.getBody();
+        if (!usuarioResponse.getStatusCode().is2xxSuccessful() || usuario == null || !Boolean.TRUE.equals(usuario.getActivo())) {
             throw new IllegalArgumentException("El usuario no existe o está inactivo");
         }
         
         // Obtener el stock actual del producto
         ResponseEntity<StockDTO> stockActualResponse = stockClient.getStockByProductoId(movimiento.getProductoId());
-        if (!stockActualResponse.getStatusCode().is2xxSuccessful() || stockActualResponse.getBody() == null) {
+        StockDTO stockActual = stockActualResponse.getBody();
+        if (!stockActualResponse.getStatusCode().is2xxSuccessful() || stockActual == null) {
             throw new IllegalArgumentException("No se pudo obtener el stock actual del producto");
         }
-        
-        StockDTO stockActual = stockActualResponse.getBody();
         
         // Validar que el stock actual no sea null y calcular nuevo stock
         Integer cantidadActual = stockActual.getCantidadActual();
@@ -78,8 +85,8 @@ public class MovimientoService {
         stockActual.setCantidadActual(nuevaCantidad);
         
         // Registrar el movimiento y guardar el nombre del usuario para auditoría
-        movimiento.setUsuario(usuarioResponse.getBody().getNombre());
-        movimiento.setUsuarioEmail(usuarioResponse.getBody().getCorreo());
+        movimiento.setUsuario(usuario.getNombre());
+        movimiento.setUsuarioEmail(usuario.getCorreo());
         Movimiento mov = movimientoRepository.save(movimiento);
         
         // Actualizar el stock con la nueva cantidad calculada

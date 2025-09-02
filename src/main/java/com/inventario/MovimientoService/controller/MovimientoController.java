@@ -3,7 +3,6 @@ package com.inventario.MovimientoService.controller;
 import com.inventario.MovimientoService.dto.MovimientoRegistroDTO;
 import com.inventario.MovimientoService.entity.Movimiento;
 import com.inventario.MovimientoService.service.MovimientoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,10 +13,12 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/movimientos")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class MovimientoController {
-    @Autowired
-    private MovimientoService movimientoService;
+    private final MovimientoService movimientoService;
+
+    public MovimientoController(MovimientoService movimientoService) {
+        this.movimientoService = movimientoService;
+    }
 
     @GetMapping
     public List<Movimiento> getAllMovimientos() {
