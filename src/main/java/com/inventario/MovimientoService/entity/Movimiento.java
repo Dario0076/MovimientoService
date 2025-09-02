@@ -20,7 +20,7 @@ public class Movimiento {
     private Integer cantidad;
     private LocalDateTime fecha;
     private Long productoId;
-    private String observacion;
+    private String descripcion; // Cambiar observacion por descripcion para consistencia con frontend
     private String usuario; // Nombre del usuario que realizó el movimiento
     private String usuarioEmail; // Email del usuario que realizó el movimiento
 }

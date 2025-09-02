@@ -39,16 +39,52 @@ public class MovimientoService {
         if (!productoResponse.getStatusCode().is2xxSuccessful() || productoResponse.getBody() == null || !Boolean.TRUE.equals(productoResponse.getBody().getActivo())) {
             throw new IllegalArgumentException("El producto no existe o está inactivo");
         }
+        
         // Validar que el usuario existe y está activo
         ResponseEntity<UsuarioDTO> usuarioResponse = usuarioClient.getUsuarioById(usuarioId);
         if (!usuarioResponse.getStatusCode().is2xxSuccessful() || usuarioResponse.getBody() == null || !Boolean.TRUE.equals(usuarioResponse.getBody().getActivo())) {
             throw new IllegalArgumentException("El usuario no existe o está inactivo");
         }
+        
+        // Obtener el stock actual del producto
+        ResponseEntity<StockDTO> stockActualResponse = stockClient.getStockByProductoId(movimiento.getProductoId());
+        if (!stockActualResponse.getStatusCode().is2xxSuccessful() || stockActualResponse.getBody() == null) {
+            throw new IllegalArgumentException("No se pudo obtener el stock actual del producto");
+        }
+        
+        StockDTO stockActual = stockActualResponse.getBody();
+        
+        // Validar que el stock actual no sea null y calcular nuevo stock
+        Integer cantidadActual = stockActual.getCantidadActual();
+        if (cantidadActual == null) {
+            cantidadActual = 0; // Si es null, inicializar en 0
+        }
+        
+        int nuevaCantidad;
+        if ("ENTRADA".equals(movimiento.getTipo())) {
+            // Para entrada, sumar la cantidad
+            nuevaCantidad = cantidadActual + movimiento.getCantidad();
+        } else if ("SALIDA".equals(movimiento.getTipo())) {
+            // Para salida, restar la cantidad
+            nuevaCantidad = cantidadActual - movimiento.getCantidad();
+            if (nuevaCantidad < 0) {
+                throw new IllegalArgumentException("No hay suficiente stock para realizar esta salida");
+            }
+        } else {
+            throw new IllegalArgumentException("Tipo de movimiento inválido: " + movimiento.getTipo());
+        }
+        
+        // Actualizar el DTO con la nueva cantidad
+        stockActual.setCantidadActual(nuevaCantidad);
+        
         // Registrar el movimiento y guardar el nombre del usuario para auditoría
         movimiento.setUsuario(usuarioResponse.getBody().getNombre());
+        movimiento.setUsuarioEmail(usuarioResponse.getBody().getCorreo());
         Movimiento mov = movimientoRepository.save(movimiento);
-        // Actualizar el stock llamando a StockService
-        stockClient.updateStock(stockDTO.getId(), stockDTO);
+        
+        // Actualizar el stock con la nueva cantidad calculada
+        stockClient.updateStock(stockActual.getId(), stockActual);
+        
         return mov;
     }
 

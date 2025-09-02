@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class UsuarioClient {
     private final RestTemplate restTemplate;
-    private final String baseUrl = "http://localhost:8093";
+    private final String baseUrl = "http://localhost:8083";
 
     @Autowired
     public UsuarioClient(RestTemplate restTemplate) {
@@ -17,7 +17,7 @@ public class UsuarioClient {
     }
 
     public ResponseEntity<UsuarioDTO> getUsuarioById(Long id) {
-        String url = baseUrl + "/usuarios/" + id;
+        String url = baseUrl + "/api/usuarios/internal/" + id;
         return restTemplate.getForEntity(url, UsuarioDTO.class);
     }
 }

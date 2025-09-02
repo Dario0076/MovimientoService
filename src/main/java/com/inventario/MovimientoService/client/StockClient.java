@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class StockClient {
     private final RestTemplate restTemplate;
-    private final String baseUrl = "http://localhost:8092";
+    private final String baseUrl = "http://localhost:8081";
 
     @Autowired
     public StockClient(RestTemplate restTemplate) {
@@ -21,5 +21,10 @@ public class StockClient {
         String url = baseUrl + "/stock/" + id;
         HttpEntity<StockDTO> request = new HttpEntity<>(stock);
         return restTemplate.exchange(url, org.springframework.http.HttpMethod.PUT, request, StockDTO.class);
+    }
+    
+    public ResponseEntity<StockDTO> getStockByProductoId(Long productoId) {
+        String url = baseUrl + "/stock/producto/" + productoId;
+        return restTemplate.getForEntity(url, StockDTO.class);
     }
 }

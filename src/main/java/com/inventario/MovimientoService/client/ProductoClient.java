@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class ProductoClient {
     private final RestTemplate restTemplate;
-    private final String baseUrl = "http://localhost:8091";
+    private final String baseUrl = "http://localhost:8084";
 
     @Autowired
     public ProductoClient(RestTemplate restTemplate) {
