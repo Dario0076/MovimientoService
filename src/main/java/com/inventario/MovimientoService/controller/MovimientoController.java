@@ -13,6 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/movimientos")
+@CrossOrigin("*")
 public class MovimientoController {
     private final MovimientoService movimientoService;
 
