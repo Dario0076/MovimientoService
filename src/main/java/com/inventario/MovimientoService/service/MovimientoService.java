@@ -87,6 +87,7 @@ public class MovimientoService {
         // Registrar el movimiento y guardar el nombre del usuario para auditoría
         movimiento.setUsuario(usuario.getNombre());
         movimiento.setUsuarioEmail(usuario.getCorreo());
+        movimiento.setFecha(java.time.LocalDateTime.now()); // Asignar fecha actual
         Movimiento mov = movimientoRepository.save(movimiento);
         
         // Actualizar el stock con la nueva cantidad calculada
