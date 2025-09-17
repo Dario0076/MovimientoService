@@ -49,6 +49,31 @@ public class MovimientoController {
         }
     }
 
+    // Obtener movimientos por producto
+    @GetMapping("/producto/{productoId}")
+    public List<Movimiento> getMovimientosByProducto(@PathVariable Long productoId) {
+        return movimientoService.getMovimientosByProducto(productoId);
+    }
+
+    // Obtener movimientos por rango de fechas (formato: yyyy-MM-ddTHH:mm:ss)
+    @GetMapping("/fecha")
+    public List<Movimiento> getMovimientosByFecha(@RequestParam String inicio, @RequestParam String fin) {
+        java.time.LocalDateTime fechaInicio = java.time.LocalDateTime.parse(inicio);
+        java.time.LocalDateTime fechaFin = java.time.LocalDateTime.parse(fin);
+        return movimientoService.getMovimientosByFecha(fechaInicio, fechaFin);
+    }
+
+    // Obtener movimientos por producto y rango de fechas
+    @GetMapping("/producto/{productoId}/fecha")
+    public List<Movimiento> getMovimientosByProductoAndFecha(
+            @PathVariable Long productoId,
+            @RequestParam String inicio,
+            @RequestParam String fin) {
+        java.time.LocalDateTime fechaInicio = java.time.LocalDateTime.parse(inicio);
+        java.time.LocalDateTime fechaFin = java.time.LocalDateTime.parse(fin);
+        return movimientoService.getMovimientosByProductoAndFecha(productoId, fechaInicio, fechaFin);
+    }
+
     @GetMapping("/health")
     public Map<String, Object> health() {
         Map<String, Object> status = new HashMap<>();

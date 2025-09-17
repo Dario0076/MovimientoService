@@ -104,4 +104,19 @@ public class MovimientoService {
     public void deleteMovimiento(Long id) {
         // No se elimina físicamente ningún movimiento (auditoría)
     }
+
+    // Buscar movimientos por producto
+    public java.util.List<Movimiento> getMovimientosByProducto(Long productoId) {
+        return movimientoRepository.findByProductoId(productoId);
+    }
+
+    // Buscar movimientos por rango de fechas
+    public java.util.List<Movimiento> getMovimientosByFecha(java.time.LocalDateTime fechaInicio, java.time.LocalDateTime fechaFin) {
+        return movimientoRepository.findByFechaBetween(fechaInicio, fechaFin);
+    }
+
+    // Buscar movimientos por producto y rango de fechas
+    public java.util.List<Movimiento> getMovimientosByProductoAndFecha(Long productoId, java.time.LocalDateTime fechaInicio, java.time.LocalDateTime fechaFin) {
+        return movimientoRepository.findByProductoIdAndFechaBetween(productoId, fechaInicio, fechaFin);
+    }
 }
